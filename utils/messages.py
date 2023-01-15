@@ -1,0 +1,3 @@
+MESSAGES = {
+    "start": "Hello"
+}
