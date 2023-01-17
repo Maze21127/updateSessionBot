@@ -26,6 +26,7 @@ async def send_code(api_id, api_hash, phone_number):
 """
     try:
         result = await client.send_code_request(phone_number)
+        logger.info(f"Отправлен код на {phone_number}")
     except PhoneNumberInvalidError:
         await client.disconnect()
         return "Неверный номер телефона"
@@ -108,7 +109,8 @@ async def get_groups(tg_client: TelegramClient = None):
 
     groups = await client.get_dialogs()
     groups = filter(channel_filter, groups)
-
+    for i in groups:
+        print(i)
     result = [{
         "name": i.name,
         "id": i.entity.id,
