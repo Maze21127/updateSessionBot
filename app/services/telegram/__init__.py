@@ -1,3 +1,4 @@
+import asyncio
 import random
 
 import telethon.types
@@ -153,6 +154,7 @@ async def rename_channels():
                 break
         try:
             result = await client(functions.channels.UpdateUsernameRequest(channel['id'], new_name))
+            await asyncio.sleep(60)
             if result:
                 result_list.append({"status": "200",
                                     "message": f"Название канала {channel['username']}({channel['id']}) изменен на {new_name}",

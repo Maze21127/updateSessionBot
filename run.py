@@ -3,6 +3,7 @@ from settings import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
 from app import app, db
 from waitress import serve
 
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

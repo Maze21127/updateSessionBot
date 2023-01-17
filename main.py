@@ -1,10 +1,20 @@
 from aiogram import executor, Dispatcher, types
+
+import utils.api
 from logger import logger
-from loader import dp
+from loader import dp, bot
 import handlers
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from renamer import start
+from settings import ADMINS
+
+
+async def rename_channels():
+    result = await utils.api.rename()
+    for obj in result['data']:
+        if obj['status'] != "MUTEX":
+            for i in ADMINS:
+                await bot.send_message(i, f"{obj['channel_id']}\n{obj['message']}")
 
 
 async def on_startup(dispatcher: Dispatcher):
@@ -25,8 +35,8 @@ async def on_shutdown(dispatcher: Dispatcher):
 
 if __name__ == "__main__":
     logger.info("Start bot")
-    #scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
-    #scheduler.add_job(start, trigger='interval', seconds=10)
-    #scheduler.start()
+    scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
+    scheduler.add_job(rename_channels, trigger='interval', hours=2)
+    scheduler.start()
     executor.start_polling(dp, on_startup=on_startup, on_shutdown=on_shutdown)
 

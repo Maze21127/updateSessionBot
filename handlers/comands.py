@@ -45,7 +45,6 @@ async def update_handler(message: types.Message):
     return await message.answer(f"Обновление аккуанта происходит здесь\nhttp://{DOMAIN}/account")
 
 
-
 @dp.message_handler(commands=['status'])
 async def status_handler(message: types.Message):
     if message.from_user.id not in ADMINS:
