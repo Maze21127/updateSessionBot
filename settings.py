@@ -10,3 +10,10 @@ ADMINS = list(map(lambda x: int(x), ADMINS))
 API_ID = getenv("API_ID")
 API_HASH = getenv("API_HASH")
 SESSION = getenv("SESSION")
+
+SQLALCHEMY_DATABASE_URI = 'sqlite:///bot.db?check_same_thread=False'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+SECRET_KEY = getenv('SECRET_KEY')
+
+DOMAIN = getenv('DOMAIN')
+AUTH_TOKEN = getenv('AUTH_TOKEN')

@@ -1,3 +1,8 @@
+help_message = """
+/status - просмотр статуса аккаунта
+/update - изменение аккаунта.
+"""
 MESSAGES = {
-    "start": "Hello"
+    "start": "Для просмотра команда напиши /help",
+    'help': help_message,
 }
