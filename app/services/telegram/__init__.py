@@ -109,12 +109,6 @@ async def get_groups(tg_client: TelegramClient = None):
 
     groups = await client.get_dialogs()
     groups = filter(channel_filter, groups)
-    for i in groups:
-        print(i.name)
-        print(i.entity.id)
-        print(i.entity.username)
-        print(i.entity.participants_count)
-        print(i.entity)
     result = [{
         "name": i.name,
         "id": i.entity.id,
