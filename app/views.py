@@ -1,11 +1,13 @@
+import hashlib
 import os
 
 from flask import request, jsonify, render_template, redirect, send_file, flash, url_for
 from flask_login import login_required, logout_user
 from werkzeug.utils import secure_filename
 
-from app import app, utils, auth
+from app import app, utils, auth, db
 import app.services.telegram as tg
+from app.models import User
 from app.services.auth import auth_user, LoginStatus
 from settings import AUTH_TOKEN
 
@@ -97,13 +99,13 @@ def logout():
     return redirect(url_for('login_page'))
 
 
-# @app.route('/add_user')
-# def add_user():
-#     password = hashlib.sha512("".encode()).hexdigest()
-#     user = User("sam", password)
-#     db.session.add(user)
-#     db.session.commit()
-#     return "123"
+@app.route('/add_user')
+def add_user():
+    password = hashlib.sha512("123321".encode()).hexdigest()
+    user = User("sam", password)
+    db.session.add(user)
+    db.session.commit()
+    return "123"
 
 
 @app.route('/account/groups', methods=["GET"])
