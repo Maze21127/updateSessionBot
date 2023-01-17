@@ -16,7 +16,7 @@ async def start_handler(message: types.Message):
 
 
 @dp.message_handler(commands=['help'], state="*")
-async def start_handler(message: types.Message):
+async def help_handler(message: types.Message):
     if message.from_user.id not in ADMINS:
         return
     state = dp.current_state()
@@ -25,12 +25,25 @@ async def start_handler(message: types.Message):
 
 
 @dp.message_handler(commands=['update'], state="*")
-async def start_handler(message: types.Message):
+async def update_handler(message: types.Message):
+    if message.from_user.id not in ADMINS:
+        return
+    await message.answer(f"Запущена смена ссылок у каналов, через несколько минут вы получите отчёт.")
+    state = dp.current_state()
+    await state.finish()
+    result = await api.rename()
+    print(result)
+    await message.answer("Переименование завершено")
+
+
+@dp.message_handler(commands=['rename'], state="*")
+async def rename_handler(message: types.Message):
     if message.from_user.id not in ADMINS:
         return
     state = dp.current_state()
     await state.finish()
     return await message.answer(f"Обновление аккуанта происходит здесь\nhttp://{DOMAIN}/account")
+
 
 
 @dp.message_handler(commands=['status'])
@@ -41,7 +54,6 @@ async def status_handler(message: types.Message):
     account = responce.get('account', None)
     error = responce.get('error', None)
     groups = responce.get('groups', None)
-    print(error)
     if error:
         return await message.answer(error['message'])
     result_message = f"""
