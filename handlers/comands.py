@@ -24,8 +24,8 @@ async def help_handler(message: types.Message):
     return await message.answer(MESSAGES['help'])
 
 
-@dp.message_handler(commands=['update'], state="*")
-async def update_handler(message: types.Message):
+@dp.message_handler(commands=['rename'], state="*")
+async def rename_handler(message: types.Message):
     if message.from_user.id not in ADMINS:
         return
     await message.answer(f"Запущена смена ссылок у каналов, через несколько минут вы получите отчёт.")
@@ -36,8 +36,8 @@ async def update_handler(message: types.Message):
     await message.answer("Переименование завершено")
 
 
-@dp.message_handler(commands=['rename'], state="*")
-async def rename_handler(message: types.Message):
+@dp.message_handler(commands=['update'], state="*")
+async def update_handler(message: types.Message):
     if message.from_user.id not in ADMINS:
         return
     state = dp.current_state()
