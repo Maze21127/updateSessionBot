@@ -62,7 +62,7 @@ async def account_status():
     if isinstance(my_account, dict):
         return jsonify(account=my_account, groups=groups_list)
     else:
-        return jsonify(error=my_account)
+        return jsonify(error={"status": 400, "message": "Вход не выполнен"})
 
 
 @app.route('/login', methods=['GET', 'POST'])
