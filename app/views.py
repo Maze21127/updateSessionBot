@@ -99,13 +99,13 @@ def logout():
     return redirect(url_for('login_page'))
 
 
-@app.route('/add_user')
-def add_user():
-    password = hashlib.sha512("123321".encode()).hexdigest()
-    user = User("sam", password)
-    db.session.add(user)
-    db.session.commit()
-    return "123"
+# @app.route('/add_user')
+# def add_user():
+#     password = hashlib.sha512("".encode()).hexdigest()
+#     user = User("sam", password)
+#     db.session.add(user)
+#     db.session.commit()
+#     return "123"
 
 
 @app.route('/account/groups', methods=["GET"])
