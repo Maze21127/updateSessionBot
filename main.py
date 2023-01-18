@@ -1,4 +1,5 @@
 from aiogram import executor, Dispatcher, types
+from aiogram.utils.exceptions import ChatNotFound
 
 import utils.api
 from logger import logger
@@ -14,7 +15,10 @@ async def rename_channels():
     for obj in result['data']:
         if obj['status'] != "MUTEX":
             for i in ADMINS:
-                await bot.send_message(i, f"{obj['channel_id']}\n{obj['message']}")
+                try:
+                    await bot.send_message(i, f"{obj['channel_id']}\n{obj['message']}")
+                except ChatNotFound:
+                    continue
 
 
 async def on_startup(dispatcher: Dispatcher):

@@ -11,6 +11,7 @@ from logger import logger
 from telethon.sessions import StringSession
 
 
+@logger.catch
 async def send_code(api_id, api_hash, phone_number):
     client = TelegramClient("tg", api_id, api_hash)
     await client.connect()
@@ -39,6 +40,7 @@ async def send_code(api_id, api_hash, phone_number):
     return code
 
 
+@logger.catch
 async def sign_in(code, code_hash):
     code_from_db = CodeRequest.query.filter_by(code_hash=code_hash).first()
 
@@ -64,6 +66,7 @@ async def sign_in(code, code_hash):
     return status
 
 
+@logger.catch
 async def get_me():
     account = Account.query.filter_by(is_active=True).first()
     if account is None:
@@ -90,6 +93,7 @@ def channel_filter(dialog):
     return False
 
 
+@logger.catch
 async def _get_client():
     account = Account.query.filter_by(is_active=True).first()
     if account is None:
@@ -100,6 +104,7 @@ async def _get_client():
     return client
 
 
+@logger.catch
 async def get_groups(tg_client: TelegramClient = None):
     if tg_client is None:
         client = await _get_client()
@@ -131,6 +136,7 @@ def _get_new_name(names: list, old_name) -> str:
             return new_name
 
 
+@logger.catch
 async def rename_channels():
     client = await _get_client()
     logger.info("Connected")
@@ -150,7 +156,10 @@ async def rename_channels():
             try:
                 entity = await client.get_entity(new_name)
                 new_name = _get_new_name(names, channel['username'])
-            except ValueError:
+            except (ValueError, UsernameInvalidError):
+                break
+            except Exception as ex:
+                logger.exception(ex)
                 break
         try:
             result = await client(functions.channels.UpdateUsernameRequest(channel['id'], new_name))
