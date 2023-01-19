@@ -40,7 +40,7 @@ async def on_shutdown(dispatcher: Dispatcher):
 if __name__ == "__main__":
     logger.info("Start bot")
     scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
-    scheduler.add_job(rename_channels, trigger='interval', hours=2)
+    scheduler.add_job(rename_channels, trigger='interval', hours=4)
     scheduler.start()
     executor.start_polling(dp, on_startup=on_startup, on_shutdown=on_shutdown)
 
