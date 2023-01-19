@@ -4,7 +4,7 @@ import random
 import telethon.types
 from telethon import TelegramClient, functions
 from telethon.errors.rpcerrorlist import ChannelsAdminPublicTooMuchError, ChannelInvalidError, ChatAdminRequiredError, \
-    UsernameInvalidError, UsernameOccupiedError, PhoneNumberInvalidError
+    UsernameInvalidError, UsernameOccupiedError, PhoneNumberInvalidError, FloodWaitError
 
 from app.models import *
 from logger import logger
@@ -163,7 +163,7 @@ async def rename_channels():
                 break
         try:
             result = await client(functions.channels.UpdateUsernameRequest(channel['id'], new_name))
-            await asyncio.sleep(60)
+            await asyncio.sleep(120)
             if result:
                 result_list.append({"status": "200",
                                     "message": f"Название канала {channel['username']}({channel['id']}) изменен на {new_name}",
@@ -192,6 +192,11 @@ async def rename_channels():
         except UsernameOccupiedError as ex:
             result_list.append({"status": "400",
                                 "message": f"Неверное имя для смены {new_name}",
+                                "channel_id": channel['id']})
+            logger.exception(ex)
+        except FloodWaitError as ex:
+            result_list.append({"status": "400",
+                                "message": f"FloodWaitError, слишком часто меняются имена",
                                 "channel_id": channel['id']})
             logger.exception(ex)
     await client.disconnect()
