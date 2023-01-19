@@ -20,7 +20,7 @@ async def account_status():
 async def rename():
     async with aiohttp.ClientSession() as session:
         url = f"http://{DOMAIN}/rename"
-        async with session.get(url, headers=headers) as resp:
+        async with session.get(url, headers=headers, timeout=600) as resp:
             try:
                 response = await resp.json()
             except ContentTypeError:
