@@ -136,6 +136,13 @@ def _get_new_name(names: list, old_name) -> str:
             return new_name
 
 
+def _remove_from_file(string: str, file: str):
+    with open(file, 'r') as f:
+        names = [i.strip() for i in f.readlines()]
+    with open(file, 'w') as f:
+        f.write("\n".join([i for i in names if i != string]))
+
+
 @logger.catch
 async def rename_channels():
     client = await _get_client()
@@ -146,7 +153,8 @@ async def rename_channels():
         return {"status": "400",
                 "message": "На аккаунте нет созданных каналов, где можно менять название.",
                 }
-    with open('app/static/files/names.txt', 'r') as file:
+    names_file_path = 'app/static/files/names.txt'
+    with open(names_file_path, 'r') as file:
         names = [i.strip() for i in file.readlines()]
 
     result_list = []
@@ -186,8 +194,9 @@ async def rename_channels():
             logger.exception(ex)
         except UsernameInvalidError as ex:
             result_list.append({"status": "400",
-                                "message": f"Неверное имя для смены {new_name}",
+                                "message": f"Неверное имя для смены {new_name}, оно было удалено из списка",
                                 "channel_id": channel['id']})
+            _remove_from_file(new_name, names_file_path)
             logger.exception(ex)
         except UsernameOccupiedError as ex:
             result_list.append({"status": "400",
