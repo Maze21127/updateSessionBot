@@ -13,7 +13,7 @@ from settings import ADMINS
 async def rename_channels():
     result = await utils.api.rename()
     for obj in result['data']:
-        if obj['status'] != "MUTEX":
+        if obj['status'] != "200":
             for i in ADMINS:
                 try:
                     await bot.send_message(i, f"{obj['channel_id']}\n{obj['message']}")

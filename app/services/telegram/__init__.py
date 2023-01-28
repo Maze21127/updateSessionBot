@@ -124,7 +124,7 @@ async def get_groups(tg_client: TelegramClient = None):
 
     if tg_client is None:
         await client.disconnect()
-    if not result:
+    if not result or len(result) == 0:
         result = "На аккаунте нет созданных каналов, где можно менять название."
     return result
 
@@ -150,9 +150,9 @@ async def rename_channels():
     groups = await get_groups(client)
     if isinstance(groups, str):
         await client.disconnect()
-        return {"status": "400",
+        return [{"status": "400",
                 "message": "На аккаунте нет созданных каналов, где можно менять название.",
-                }
+                }]
     names_file_path = 'app/static/files/names.txt'
     with open(names_file_path, 'r') as file:
         names = [i.strip() for i in file.readlines()]
