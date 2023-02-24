@@ -126,6 +126,9 @@ async def update_session():
     api_hash = form.get("api_hash")
     phone = form.get("phone_number")
 
+    if api_id is None or api_hash is None or phone is None:
+        return f"""<h1>Вы не ввели api_id или api_hash или номер телефона</h1> <a href="/account">Назад</a>"""
+
     status = await tg.send_code(api_id, api_hash, phone)
     if isinstance(status, str):
         return f"""<h1>{status}</h1> <a href="/account">Назад</a>"""
