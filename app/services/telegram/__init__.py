@@ -4,7 +4,7 @@ import random
 import telethon.types
 from telethon import TelegramClient, functions
 from telethon.errors.rpcerrorlist import ChannelsAdminPublicTooMuchError, ChannelInvalidError, ChatAdminRequiredError, \
-    UsernameInvalidError, UsernameOccupiedError, PhoneNumberInvalidError, FloodWaitError
+    UsernameInvalidError, UsernameOccupiedError, PhoneNumberInvalidError, FloodWaitError, SessionPasswordNeededError
 
 from app.models import *
 from logger import logger
@@ -15,17 +15,17 @@ from telethon.sessions import StringSession
 async def send_code(api_id, api_hash, phone_number):
     client = TelegramClient("tg", api_id, api_hash)
     await client.connect()
-
-    if await client.is_user_authorized():
-        result = await client.get_me()
-        return f"""
-Аккаунт:
-<h3>id: {result.id}</h3>
-<h3>first_name: {result.first_name}</h3>
-<h3>last_name: {result.last_name}</h3>
-<h3>phone: {result.phone}</h3>
-<h1>Вход уже выполнен</h1>
-"""
+#
+#     if await client.is_user_authorized():
+#         result = await client.get_me()
+#         return f"""
+# Аккаунт:
+# <h3>id: {result.id}</h3>
+# <h3>first_name: {result.first_name}</h3>
+# <h3>last_name: {result.last_name}</h3>
+# <h3>phone: {result.phone}</h3>
+# <h1>Вход уже выполнен</h1>
+# """
     try:
         result = await client.send_code_request(phone_number)
         logger.info(f"Отправлен код на {phone_number}")
@@ -41,13 +41,16 @@ async def send_code(api_id, api_hash, phone_number):
 
 
 @logger.catch
-async def sign_in(code, code_hash):
+async def sign_in(code, code_hash, password):
     code_from_db = CodeRequest.query.filter_by(code_hash=code_hash).first()
 
     client = TelegramClient("tg", code_from_db.api_id, code_from_db.api_hash)
     await client.connect()
 
-    result = await client.sign_in(code_from_db.phone_number, code, phone_code_hash=code_hash)
+    try:
+        result = await client.sign_in(code_from_db.phone_number, code, phone_code_hash=code_hash)
+    except SessionPasswordNeededError:
+        result = await client.sign_in(password=password)
     try:
         status = "Вход успешно выполнен"
     except Exception as ex:
@@ -151,8 +154,8 @@ async def rename_channels():
     if isinstance(groups, str):
         await client.disconnect()
         return [{"status": "400",
-                "message": "На аккаунте нет созданных каналов, где можно менять название.",
-                }]
+                 "message": "На аккаунте нет созданных каналов, где можно менять название.",
+                 }]
     names_file_path = 'app/static/files/names.txt'
     with open(names_file_path, 'r') as file:
         names = [i.strip() for i in file.readlines()]
@@ -185,7 +188,7 @@ async def rename_channels():
         except ChannelInvalidError as ex:
             result_list.append({"status": "400",
                                 "message": "ChannelInvalidError",
-                               "channel_id": channel['id']})
+                                "channel_id": channel['id']})
             logger.exception(ex)
         except ChatAdminRequiredError as ex:
             result_list.append({"status": "400",
@@ -210,4 +213,3 @@ async def rename_channels():
             logger.exception(ex)
     await client.disconnect()
     return result_list
-

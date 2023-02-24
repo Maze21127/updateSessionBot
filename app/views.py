@@ -140,7 +140,8 @@ async def insert_code():
         form = request.form
         code = form.get('code')
         code_hash = form.get("code_hash")
-        status = await tg.sign_in(code, code_hash)
+        password = form.get("password")
+        status = await tg.sign_in(code, code_hash, password)
         if status == 'Вход успешно выполнен':
             return redirect('/account')
         else:
