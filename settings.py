@@ -19,5 +19,5 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 SECRET_KEY = getenv('SECRET_KEY')
 
 DOMAIN = getenv('DOMAIN')
-PORT = getenv('PORT')
+PORT = getenv("PORT")
 AUTH_TOKEN = getenv('AUTH_TOKEN')
