@@ -10,8 +10,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from settings import ADMINS
 
 
-async def rename_channels():
-    result = await utils.api.rename()
+async def rename_channels(port: int):
+    result = await utils.api.rename(port)
     for obj in result['data']:
         if obj['status'] != "200":
             for i in ADMINS:
@@ -19,6 +19,14 @@ async def rename_channels():
                     await bot.send_message(i, f"{obj['channel_id']}\n{obj['message']}")
                 except ChatNotFound:
                     continue
+
+
+async def rename_all():
+    await rename_channels(6575)
+    await rename_channels(6576)
+    await rename_channels(6577)
+    await rename_channels(6578)
+    await rename_channels(6579)
 
 
 async def on_startup(dispatcher: Dispatcher):
@@ -40,7 +48,7 @@ async def on_shutdown(dispatcher: Dispatcher):
 if __name__ == "__main__":
     logger.info("Start bot")
     scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
-    scheduler.add_job(rename_channels, trigger='interval', hours=4)
+    scheduler.add_job(rename_all, trigger='interval', hours=4)
     scheduler.start()
     executor.start_polling(dp, on_startup=on_startup, on_shutdown=on_shutdown)
 

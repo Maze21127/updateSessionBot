@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 
 from app import app, utils, auth, db
 import app.services.telegram as tg
-from app.models import User
+from app.models import User, Account, CodeRequest
 from app.services.auth import auth_user, LoginStatus
 from settings import AUTH_TOKEN
 
@@ -106,6 +106,16 @@ def logout():
 #     db.session.add(user)
 #     db.session.commit()
 #     return "123"
+
+@app.route('/delete')
+def clear_database():
+    account_deleted = db.session.query(Account).delete()
+    code_deleted = db.session.query(CodeRequest).delete()
+
+    return {
+        "account_deleted" : account_deleted,
+        "code_deleted": code_deleted
+    }
 
 
 @app.route('/account/groups', methods=["GET"])
