@@ -111,7 +111,7 @@ def logout():
 def clear_database():
     account_deleted = db.session.query(Account).delete()
     code_deleted = db.session.query(CodeRequest).delete()
-
+    db.session.commit()
     return {
         "account_deleted" : account_deleted,
         "code_deleted": code_deleted
